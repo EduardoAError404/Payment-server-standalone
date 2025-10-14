@@ -64,8 +64,8 @@ No Coolify, adicione as seguintes variáveis de ambiente:
 
 ```bash
 FLASK_API_URL=https://0nlyfaans.com
-STRIPE_SECRET_KEY=sk_test_51RYxezDivFjPTQg4SynPsSdKq6O4G3JY8DwX5814nGK16NBCzEe4K0r9RtK23PkBo3fFTEMNtB6fW5UqVzR6OESg007uvoZvVK
-STRIPE_PUBLISHABLE_KEY=pk_test_51RYxezDivFjPTQg4Lp0cKmlPU8BtWkzS6TV51tDfrsNSmIhJj353hK1OSumtA2ndCfl1Nt5xqNNZGgRvNLkdpLHl00qbm9wiw3
+STRIPE_SECRET_KEY=*****
+STRIPE_PUBLISHABLE_KEY=***
 STRIPE_WEBHOOK_SECRET=whsec_placeholder
 PORT=3000
 NODE_ENV=production
