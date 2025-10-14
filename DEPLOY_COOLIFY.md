@@ -68,8 +68,8 @@ Clique em **"Environment Variables"** e adicione:
 | Nome | Valor |
 |------|-------|
 | `FLASK_API_URL` | `https://0nlyfaans.com` |
-| `STRIPE_SECRET_KEY` | `*****` |
-| `STRIPE_PUBLISHABLE_KEY` | `*********` |
+| `STRIPE_SECRET_chave` | `*****` |
+| `STRIPE_PUBLISHABLE_chave` | `*********` |
 | `STRIPE_WEBHOOK_SECRET` | `whsec_placeholder` |
 | `PORT` | `3000` |
 | `NODE_ENV` | `production` |
@@ -226,8 +226,8 @@ O Coolify mostra automaticamente:
 Quando for para produção:
 
 1. **Altere as chaves do Stripe** para modo live:
-   - `STRIPE_SECRET_KEY=sk_live_...`
-   - `STRIPE_PUBLISHABLE_KEY=pk_live_...`
+   - `STRIPE_SECRET_chave=sk_live_...`
+   - `STRIPE_PUBLISHABLE_chave=pk_live_...`
 
 2. **Configure webhook no Stripe:**
    - URL: `https://payment.0nlyfaans.com/webhook`

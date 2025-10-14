@@ -64,8 +64,8 @@ No Coolify, adicione as seguintes variáveis de ambiente:
 
 ```bash
 FLASK_API_URL=https://0nlyfaans.com
-STRIPE_SECRET_KEY=*****
-STRIPE_PUBLISHABLE_KEY=***
+STRIPE_SECRET_chave=*****
+STRIPE_PUBLISHABLE_chave=***
 STRIPE_WEBHOOK_SECRET=whsec_placeholder
 PORT=3000
 NODE_ENV=production
@@ -227,7 +227,7 @@ Webhook do Stripe (configurar no dashboard do Stripe)
 
 ### Erro: "Stripe authentication failed"
 
-**Solução:** Verifique se `STRIPE_SECRET_KEY` está correto no dashboard do Stripe.
+**Solução:** Verifique se `STRIPE_SECRET_chave` está correto no dashboard do Stripe.
 
 ### Servidor não inicia
 
