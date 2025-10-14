@@ -252,13 +252,22 @@ app.get('/api/session/:session_id', async (req, res) => {
         
         const session = await stripe.checkout.sessions.retrieve(session_id);
         
+        console.log(`✅ Sessão encontrada:`, {
+            id: session.id,
+            amount: session.amount_total,
+            status: session.payment_status
+        });
+        
         res.json({
             id: session.id,
             payment_status: session.payment_status,
             customer_email: session.customer_email,
             amount_total: session.amount_total,
+            amount: session.amount_total / 100, // Converter de centavos para dólares
             currency: session.currency,
-            metadata: session.metadata
+            metadata: session.metadata,
+            transactionId: session.id, // ID da transação
+            createdAt: session.created * 1000 // Timestamp em milissegundos
         });
         
     } catch (error) {
