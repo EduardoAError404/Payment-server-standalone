@@ -1,6 +1,9 @@
 # Dockerfile para OnlyFans Payment Server
 FROM node:18-alpine
 
+# Instalar curl para healthcheck
+RUN apk add --no-cache curl
+
 # Definir diretório de trabalho
 WORKDIR /app
 
@@ -16,10 +19,9 @@ COPY . .
 # Expor porta
 EXPOSE 3000
 
-# Healthcheck
+# Healthcheck usando curl
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+    CMD curl -f http://localhost:3000/health || exit 1
 
 # Comando para iniciar
 CMD ["node", "server.js"]
-
