@@ -1,247 +1,231 @@
-# 💳 OnlyFans Payment Server
+# Payment Server - Sistema de Assinaturas
 
-Servidor de pagamentos standalone para integração Stripe com o OnlyFans Clone.
+Servidor Node.js separado para processar pagamentos via Stripe.
 
-## 📋 Descrição
+## 🚀 Características
 
-Este é um servidor Node.js + Express separado que gerencia toda a lógica de pagamentos via Stripe, incluindo:
+- **Integração com Stripe**: Processamento seguro de pagamentos
+- **3 Planos de Assinatura**: 1, 3 e 6 meses
+- **Descontos Progressivos**: 10% para 3 meses, 20% para 6 meses
+- **Banco de Dados Compartilhado**: Usa o mesmo SQLite do sistema principal
+- **Webhooks**: Atualização automática de status de pagamento
+- **API RESTful**: Endpoints para integração com o frontend
 
-- ✅ Criação de sessões de checkout
-- ✅ Cálculo de planos de assinatura  
-- ✅ Processamento de webhooks do Stripe
-- ✅ Busca de dados de perfil via API do site principal
+## 📋 Pré-requisitos
 
-## 🏗️ Arquitetura
+- Node.js 18+ instalado
+- Conta no Stripe (modo teste ou produção)
+- Sistema principal OnlyFans rodando
 
-```
-┌─────────────────────────────────────┐
-│   Site Principal (Flask)            │
-│   https://0nlyfaans.com             │
-│   - Interface do usuário            │
-│   - Banco de dados                  │
-│   - API de perfis                   │
-└────────────┬────────────────────────┘
-             │ HTTPS
-             ▼
-┌─────────────────────────────────────┐
-│   Payment Server (Node.js)          │
-│   - Integração Stripe               │
-│   - Checkout sessions               │
-│   - Webhooks                        │
-└─────────────────────────────────────┘
-```
+## 🔧 Instalação
 
-## 🚀 Deploy no Coolify
-
-### Passo 1: Criar novo projeto no GitHub
-
-1. Crie um novo repositório no GitHub (ex: `onlyfans-payment-server`)
-2. Faça upload deste projeto para o repositório
-
+1. Instalar dependências:
 ```bash
-cd onlyfans-payment-server
-git init
-git add .
-git commit -m "Initial commit: Payment server standalone"
-git branch -M main
-git remote add origin https://github.com/SEU_USUARIO/onlyfans-payment-server.git
-git push -u origin main
-```
-
-### Passo 2: Configurar no Coolify
-
-1. Acesse seu Coolify
-2. Clique em **"New Project"** ou use um projeto existente
-3. Clique em **"Add New Resource"** → **"Git Repository"**
-4. Configure:
-   - **Repository:** `https://github.com/SEU_USUARIO/onlyfans-payment-server`
-   - **Branch:** `main`
-   - **Build Pack:** Dockerfile
-
-### Passo 3: Configurar Variáveis de Ambiente
-
-No Coolify, adicione as seguintes variáveis de ambiente:
-
-```bash
-FLASK_API_URL=https://0nlyfaans.com
-STRIPE_SECRET_chave=*****
-STRIPE_PUBLISHABLE_chave=***
-STRIPE_WEBHOOK_SECRET=whsec_placeholder
-PORT=3000
-NODE_ENV=production
-```
-
-### Passo 4: Configurar Domínio
-
-Configure um domínio ou subdomínio para o payment server:
-
-**Opções:**
-- Subdomínio: `payment.0nlyfaans.com`
-- Ou deixe o Coolify gerar uma URL automática
-
-### Passo 5: Deploy
-
-1. Clique em **"Deploy"**
-2. Aguarde o build completar
-3. Verifique os logs para confirmar que iniciou corretamente
-
-### Passo 6: Atualizar Site Principal
-
-Após o deploy, atualize a variável de ambiente no **projeto principal do Flask**:
-
-```bash
-PAYMENT_SERVER_URL=https://payment.0nlyfaans.com
-```
-
-Ou use a URL gerada pelo Coolify.
-
-## 🧪 Testar
-
-### Health Check
-
-```bash
-curl https://payment.0nlyfaans.com/health
-```
-
-Deve retornar:
-```json
-{
-  "status": "ok",
-  "message": "Payment server is running",
-  "flask_api": "https://0nlyfaans.com",
-  "timestamp": "..."
-}
-```
-
-### Testar Criação de Checkout
-
-```bash
-curl -X POST https://payment.0nlyfaans.com/api/create-checkout-session \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "babymatosao",
-    "plan": "1_month"
-  }'
-```
-
-## 📁 Estrutura do Projeto
-
-```
-onlyfans-payment-server/
-├── server.js              # Servidor principal
-├── package.json           # Dependências Node.js
-├── Dockerfile             # Configuração Docker
-├── .dockerignore          # Arquivos ignorados no build
-├── .gitignore             # Arquivos ignorados no Git
-├── .env.example           # Exemplo de variáveis de ambiente
-└── README.md              # Este arquivo
-```
-
-## 🔧 Desenvolvimento Local
-
-### Pré-requisitos
-
-- Node.js 18+
-- npm
-
-### Instalação
-
-```bash
-# Instalar dependências
+cd payment_server
 npm install
+```
 
-# Copiar .env.example para .env
+2. Configurar variáveis de ambiente:
+```bash
 cp .env.example .env
+```
 
-# Editar .env com suas configurações
-nano .env
+3. Editar `.env` com suas chaves do Stripe:
+```env
+STRIPE_SECRET_KEY=sk_test_sua_chave_secreta
+STRIPE_PUBLISHABLE_KEY=pk_test_sua_chave_publica
+STRIPE_WEBHOOK_SECRET=whsec_seu_webhook_secret
+PORT=3000
+FRONTEND_URL=http://localhost:5000
+```
 
-# Iniciar servidor
+## 🎯 Como Obter as Chaves do Stripe
+
+1. Acesse [https://dashboard.stripe.com](https://dashboard.stripe.com)
+2. Faça login ou crie uma conta
+3. Vá em **Developers** → **API keys**
+4. Copie a **Secret key** e **Publishable key**
+5. Para o webhook:
+   - Vá em **Developers** → **Webhooks**
+   - Clique em **Add endpoint**
+   - URL: `http://seu-dominio.com/api/webhook`
+   - Eventos: `checkout.session.completed`, `checkout.session.expired`
+   - Copie o **Signing secret**
+
+## ▶️ Executar
+
+### Modo desenvolvimento:
+```bash
+npm run dev
+```
+
+### Modo produção:
+```bash
 npm start
 ```
 
 O servidor estará disponível em `http://localhost:3000`
 
-## 📊 Endpoints
+## 📡 Endpoints da API
 
-### `GET /health`
-Health check do servidor
-
-**Resposta:**
-```json
-{
-  "status": "ok",
-  "message": "Payment server is running",
-  "flask_api": "https://0nlyfaans.com",
-  "timestamp": "2025-10-14T21:00:00.000Z"
-}
+### Health Check
+```
+GET /health
 ```
 
-### `POST /api/create-checkout-session`
-Criar sessão de checkout no Stripe
+### Obter Perfil
+```
+GET /api/profile/:username
+```
 
-**Body:**
-```json
-{
+### Obter Planos de Assinatura
+```
+GET /api/subscription-plans/:username
+```
+Retorna os 3 planos com preços calculados baseados no preço mensal do perfil.
+
+### Criar Sessão de Checkout
+```
+POST /api/create-checkout-session
+Body: {
   "username": "babymatosao",
-  "plan": "1_month"
+  "planId": "3-months",
+  "customerEmail": "cliente@email.com",
+  "customerName": "Nome do Cliente"
 }
 ```
 
-**Resposta:**
-```json
-{
-  "sessionId": "cs_test_...",
-  "url": "https://checkout.stripe.com/..."
-}
+### Webhook do Stripe
+```
+POST /api/webhook
+```
+Recebe eventos do Stripe para atualizar status de pagamentos.
+
+### Verificar Pagamento
+```
+GET /api/verify-payment/:sessionId
 ```
 
-### `GET /api/session/:sessionId`
-Buscar dados de uma sessão do Stripe
-
-**Resposta:**
-```json
-{
-  "id": "cs_test_...",
-  "status": "complete",
-  "customer_email": "user@example.com",
-  ...
-}
+### Listar Assinaturas (Admin)
+```
+GET /api/subscriptions/:username
 ```
 
-### `POST /webhook`
-Webhook do Stripe (configurar no dashboard do Stripe)
+## 💳 Planos de Assinatura
 
-## 🔐 Segurança
+Os planos são calculados automaticamente baseados no preço mensal configurado em cada perfil:
 
-- ✅ Chaves do Stripe em variáveis de ambiente
-- ✅ Validação de webhooks do Stripe
-- ✅ CORS configurado
-- ✅ Healthcheck para monitoramento
+| Plano | Duração | Desconto |
+|-------|---------|----------|
+| Básico | 1 mês | 0% |
+| Popular | 3 meses | 10% |
+| Premium | 6 meses | 20% |
 
-## 🐛 Troubleshooting
+**Exemplo**: Se o preço mensal é $9.99:
+- 1 mês: $9.99
+- 3 meses: $26.97 (economia de $2.99)
+- 6 meses: $47.95 (economia de $11.99)
 
-### Erro: "Cannot connect to Flask API"
+## 🗄️ Banco de Dados
 
-**Solução:** Verifique se `FLASK_API_URL` está configurado corretamente e se o site principal está acessível.
+O servidor cria automaticamente a tabela `subscriptions` no banco SQLite principal:
 
-### Erro: "Stripe authentication failed"
+```sql
+CREATE TABLE subscriptions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    profile_username TEXT NOT NULL,
+    customer_email TEXT NOT NULL,
+    customer_name TEXT,
+    stripe_customer_id TEXT,
+    stripe_subscription_id TEXT,
+    stripe_session_id TEXT,
+    plan_type TEXT NOT NULL,
+    plan_months INTEGER NOT NULL,
+    amount REAL NOT NULL,
+    status TEXT DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME,
+    FOREIGN KEY (profile_id) REFERENCES profile (id)
+)
+```
 
-**Solução:** Verifique se `STRIPE_SECRET_chave` está correto no dashboard do Stripe.
+## 🔒 Segurança
 
-### Servidor não inicia
+- Todas as transações são processadas pelo Stripe
+- Nenhum dado de cartão é armazenado no servidor
+- Webhooks verificados com assinatura do Stripe
+- CORS configurado para aceitar apenas o domínio do frontend
+- Variáveis sensíveis em arquivo `.env` (não versionado)
 
-**Solução:** Verifique os logs do Coolify e confirme que todas as variáveis de ambiente estão configuradas.
+## 🚀 Deploy
 
-## 📞 Suporte
+### Com Docker:
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --production
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]
+```
 
-Para problemas com:
-- **Stripe:** Verifique o dashboard em https://dashboard.stripe.com
-- **Deploy:** Verifique os logs do Coolify
-- **Integração:** Verifique se o site principal está acessível
+### Com PM2:
+```bash
+npm install -g pm2
+pm2 start server.js --name payment-server
+pm2 save
+pm2 startup
+```
 
----
+## 🔗 Integração com Frontend
 
-**Versão:** 1.0.0  
-**Última atualização:** 14/10/2025
+No frontend, use a chave publicável do Stripe:
+
+```javascript
+const stripe = Stripe('pk_test_sua_chave_publicavel');
+
+// Criar checkout
+const response = await fetch('http://localhost:3000/api/create-checkout-session', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        username: 'babymatosao',
+        planId: '3-months',
+        customerEmail: 'cliente@email.com',
+        customerName: 'Nome do Cliente'
+    })
+});
+
+const { url } = await response.json();
+window.location.href = url; // Redireciona para checkout do Stripe
+```
+
+## 📝 Logs
+
+O servidor registra:
+- ✅ Conexões bem-sucedidas
+- ❌ Erros de processamento
+- 💳 Pagamentos completados
+- 🔔 Eventos de webhook
+
+## 🆘 Troubleshooting
+
+### Erro: "Cannot find module 'stripe'"
+```bash
+npm install
+```
+
+### Erro: "Database locked"
+Certifique-se de que o sistema principal não está usando o banco em modo exclusivo.
+
+### Webhook não funciona
+1. Verifique se a URL está acessível publicamente
+2. Use ngrok para testes locais: `ngrok http 3000`
+3. Configure a URL do ngrok no Stripe Dashboard
+
+## 📄 Licença
+
+ISC
 

@@ -106,21 +106,21 @@ app.get('/api/subscription-plans/:username', async (req, res) => {
         const plans = [
             {
                 id: '1-month',
-                name: '1 Mês',
+                name: '1 Month',
                 months: 1,
                 ...calculatePlanPrices(monthlyPrice, 1),
                 popular: false
             },
             {
                 id: '6-months',
-                name: '6 Meses',
+                name: '6 Months',
                 months: 6,
                 ...calculatePlanPrices(monthlyPrice, 6),
                 popular: false
             },
             {
                 id: '12-months',
-                name: '12 Meses',
+                name: '12 Months',
                 months: 12,
                 ...calculatePlanPrices(monthlyPrice, 12),
                 popular: true
@@ -192,8 +192,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
                         price_data: {
                             currency: 'usd',
                             product_data: {
-                                name: `Assinatura ${months} ${months === 1 ? 'Mês' : 'Meses'} - ${profile.display_name}`,
-                                description: `Acesso exclusivo ao perfil @${profile.username}`,
+                                name: `${months} ${months === 1 ? 'Month' : 'Months'} Subscription - ${profile.display_name}`,
+                                description: `Exclusive access to @${profile.username}'s profile`,
                                 images: []
                             },
                             unit_amount: pricing.priceInCents
