@@ -165,13 +165,14 @@ app.post('/api/create-checkout-session', async (req, res) => {
         }
         
         // Buscar informações do perfil via API do Flask
-        const profileResponse = await axios.get(`${FLASK_API_URL}/api/profile/${username}`, {
-            timeout: 10000
-        });
-        
-        const profile = profileResponse.data;
-        
-        // Determinar número de meses
+	        const profileResponse = await axios.get(`${FLASK_API_URL}/api/profile/${username}`, {
+	            timeout: 10000
+	        });
+	        
+	        const profile = profileResponse.data;
+	        const currency = profile.currency ? profile.currency.toLowerCase() : 'usd'; // Obter moeda do perfil
+	        
+	        // Determinar número de meses
         let months = 1;
         if (planId === '6-months') months = 6;
         else if (planId === '12-months') months = 12;
@@ -182,17 +183,17 @@ app.post('/api/create-checkout-session', async (req, res) => {
         console.log(`💵 Valor total: $${pricing.finalPrice} (${months} meses)`);
         
         try {
-            // Criar sessão de checkout do Stripe
-            const session = await stripe.checkout.sessions.create({
-                payment_method_types: ['card'],
-                mode: 'payment',
-                customer_email: customerEmail,
-                line_items: [
-                    {
-                        price_data: {
-                            currency: 'usd',
-                            product_data: {
-                                name: `${months} ${months === 1 ? 'Month' : 'Months'} Subscription - ${profile.display_name}`,
+	            // Criar sessão de checkout do Stripe
+	            const session = await stripe.checkout.sessions.create({
+	                payment_method_types: ['card'],
+	                mode: 'payment',
+	                customer_email: customerEmail,
+	                line_items: [
+	                    {
+	                        price_data: {
+	                            currency: currency, // Usar a moeda do perfil
+	                            product_data: {
+	                                name: `${months} ${months === 1 ? 'Month' : 'Months'} Subscription - ${profile.display_name}`,
                                 description: `Exclusive access to @${profile.username}'s profile`,
                                 images: []
                             },
@@ -236,11 +237,17 @@ app.post('/api/create-checkout-session', async (req, res) => {
             });
         }
         
-        res.status(500).json({ 
-            error: 'Erro interno do servidor',
-            details: error.message 
-        });
-    }
+	        res.status(500).json({ 
+	            error: 'Erro interno do servidor',
+	            details: error.message 
+	        });
+	    }
+	});
+
+// Endpoint para recarregar cache (dummy, pois os dados são buscados a cada requisição)
+app.post('/api/reload-cache', (req, res) => {
+    console.log('🔄 Solicitação de recarga de cache recebida. Ignorando, pois os dados são buscados em tempo real.');
+    res.json({ status: 'ok', message: 'Cache reload request received and ignored.' });
 });
 
 // Buscar informações de uma sessão do Stripe
