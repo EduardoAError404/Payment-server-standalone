@@ -171,6 +171,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
 	        
 	        const profile = profileResponse.data;
 	        const currency = profile.currency ? profile.currency.toLowerCase() : 'usd'; // Obter moeda do perfil
+	        const language = profile.language || 'en'; // Obter idioma do perfil (padrão: inglês)
 	        
 	        // Determinar número de meses
         let months = 1;
@@ -202,7 +203,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
                         quantity: 1
                     }
                 ],
-                success_url: `${FLASK_API_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+                success_url: `${FLASK_API_URL}/success?session_id={CHECKOUT_SESSION_ID}&lang=${language}`,
                 cancel_url: `${FLASK_API_URL}/${username}`,
                 metadata: {
                     profile_id: profile.id.toString(),
