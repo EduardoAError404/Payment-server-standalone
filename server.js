@@ -181,25 +181,35 @@ app.post('/api/create-checkout-session', async (req, res) => {
 	        };
 	        const stripeLocale = localeMap[language] || 'en';
 	        
-	        // Textos traduzidos para o produto
-	        const translations = {
+        // Função para extrair primeiros dois nomes
+        const getFirstTwoNames = (fullName) => {
+            if (!fullName) return '';
+            const names = fullName.trim().split(/\s+/); // Dividir por espaços
+            if (names.length <= 2) return fullName; // Se tiver 1 ou 2 nomes, retornar completo
+            return `${names[0]} ${names[1]}`; // Retornar apenas os dois primeiros
+        };
+        
+        const shortName = getFirstTwoNames(profile.display_name);
+        
+        // Textos traduzidos para o produto
+        const translations = {
             pt: {
                 month: 'Mês',
                 months: 'Meses',
                 subscription: 'Assinatura',
-                exclusiveAccess: 'Acesso exclusivo ao perfil de @'
+                exclusiveAccess: 'Acesso exclusivo ao perfil de'
             },
 	            en: {
 	                month: 'Month',
 	                months: 'Months',
 	                subscription: 'Subscription',
-	                exclusiveAccess: 'Exclusive access to @'
+	                exclusiveAccess: 'Exclusive access to the profile of'
 	            },
             es: {
                 month: 'Mes',
                 months: 'Meses',
                 subscription: 'Suscripción',
-                exclusiveAccess: 'Acceso exclusivo al perfil de @'
+                exclusiveAccess: 'Acceso exclusivo al perfil de'
             }
 	        };
 	        const t = translations[language] || translations.en;
@@ -227,7 +237,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
 	                            currency: currency, // Usar a moeda do perfil
 	                            product_data: {
                                 name: `${t.subscription} ${months} ${months === 1 ? t.month : t.months} - ${profile.display_name}`,
-	                                description: `${t.exclusiveAccess}${profile.username}`,
+	                                description: `${t.exclusiveAccess} ${shortName}`,
                                 images: []
                             },
                             unit_amount: pricing.priceInCents
