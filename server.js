@@ -173,6 +173,37 @@ app.post('/api/create-checkout-session', async (req, res) => {
 	        const currency = profile.currency ? profile.currency.toLowerCase() : 'usd'; // Obter moeda do perfil
 	        const language = profile.language || 'en'; // Obter idioma do perfil (padrão: inglês)
 	        
+	        // Mapear idioma para locale do Stripe
+	        const localeMap = {
+	            'pt': 'pt-BR',
+	            'en': 'en',
+	            'es': 'es'
+	        };
+	        const stripeLocale = localeMap[language] || 'en';
+	        
+	        // Textos traduzidos para o produto
+	        const translations = {
+	            pt: {
+	                month: 'Mês',
+	                months: 'Meses',
+	                subscription: 'Assinatura',
+	                exclusiveAccess: 'Acesso exclusivo ao perfil de'
+	            },
+	            en: {
+	                month: 'Month',
+	                months: 'Months',
+	                subscription: 'Subscription',
+	                exclusiveAccess: 'Exclusive access to @'
+	            },
+	            es: {
+	                month: 'Mes',
+	                months: 'Meses',
+	                subscription: 'Suscripción',
+	                exclusiveAccess: 'Acceso exclusivo al perfil de'
+	            }
+	        };
+	        const t = translations[language] || translations.en;
+	        
 	        // Determinar número de meses
         let months = 1;
         if (planId === '6-months') months = 6;
@@ -188,14 +219,15 @@ app.post('/api/create-checkout-session', async (req, res) => {
 	            const session = await stripe.checkout.sessions.create({
 	                payment_method_types: ['card'],
 	                mode: 'payment',
+	                locale: stripeLocale, // Definir idioma do Stripe Checkout
 	                customer_email: customerEmail,
 	                line_items: [
 	                    {
 	                        price_data: {
 	                            currency: currency, // Usar a moeda do perfil
 	                            product_data: {
-	                                name: `${months} ${months === 1 ? 'Month' : 'Months'} Subscription - ${profile.display_name}`,
-                                description: `Exclusive access to @${profile.username}'s profile`,
+                                name: `${t.subscription} ${months} ${months === 1 ? t.month : t.months} - ${profile.display_name}`,
+	                                description: `${t.exclusiveAccess}${profile.username}`,
                                 images: []
                             },
                             unit_amount: pricing.priceInCents
