@@ -183,24 +183,24 @@ app.post('/api/create-checkout-session', async (req, res) => {
 	        
 	        // Textos traduzidos para o produto
 	        const translations = {
-	            pt: {
-	                month: 'Mês',
-	                months: 'Meses',
-	                subscription: 'Assinatura',
-	                exclusiveAccess: 'Acesso exclusivo ao perfil de'
-	            },
+            pt: {
+                month: 'Mês',
+                months: 'Meses',
+                subscription: 'Assinatura',
+                exclusiveAccess: 'Acesso exclusivo ao perfil de @'
+            },
 	            en: {
 	                month: 'Month',
 	                months: 'Months',
 	                subscription: 'Subscription',
 	                exclusiveAccess: 'Exclusive access to @'
 	            },
-	            es: {
-	                month: 'Mes',
-	                months: 'Meses',
-	                subscription: 'Suscripción',
-	                exclusiveAccess: 'Acceso exclusivo al perfil de'
-	            }
+            es: {
+                month: 'Mes',
+                months: 'Meses',
+                subscription: 'Suscripción',
+                exclusiveAccess: 'Acceso exclusivo al perfil de @'
+            }
 	        };
 	        const t = translations[language] || translations.en;
 	        
